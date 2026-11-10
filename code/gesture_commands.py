@@ -167,10 +167,9 @@ def reconnaitre(hands_landmarks: Sequence[Sequence[Any]],
 
     # 2. Si deux mains sont detectees (et aucune n'est ouverte), on avance.
     if len(hands_landmarks) >= 2:
-        vitesse_lineaire = float(projet_cfg.get("linear_speed", 0.0))
-        vitesse_max = float(projet_cfg.get("vitesse_lineaire_max", 0.0))
-        if vitesse_max > 0:
-            vitesse_lineaire = max(-vitesse_max, min(vitesse_lineaire, vitesse_max))
+        vitesse_lineaire = float(projet_cfg["linear_speed"])
+        vitesse_max = float(projet_cfg["vitesse_lineaire_max"])
+        vitesse_lineaire = max(-vitesse_max, min(vitesse_lineaire, vitesse_max))
         
         return Geste(
             nom="avance_deux_mains",
@@ -182,13 +181,12 @@ def reconnaitre(hands_landmarks: Sequence[Sequence[Any]],
     # 3. Sinon, une seule main : rotation si le pouce est leve.
     if len(hands_landmarks) == 1:
         landmarks = hands_landmarks[0]
-        points = to_pixels(landmarks, image_width, image_height)
         verdict = analyse_hand(landmarks, image_width, image_height, devoir1_cfg)
         
         if not verdict.is_up:
             return None
 
-        min_norm = float(devoir1_cfg.get("min_vector_norm", 0.0))
+        min_norm = float(devoir1_cfg["min_vector_norm"])
         angle = inclinaison_main(landmarks, image_width, image_height, min_norm)
         
         if angle is None:
@@ -204,12 +202,11 @@ def reconnaitre(hands_landmarks: Sequence[Sequence[Any]],
             )
 
         # Rotation : gain * angle, sature.
-        gain = float(projet_cfg.get("angular_gain", 0.0))
+        gain = float(projet_cfg["angular_gain"])
         vitesse_angulaire = gain * math.radians(angle)
         
-        vitesse_max_ang = float(projet_cfg.get("vitesse_angulaire_max", 0.0))
-        if vitesse_max_ang > 0:
-            vitesse_angulaire = max(-vitesse_max_ang, min(vitesse_angulaire, vitesse_max_ang))
+        vitesse_max_ang = float(projet_cfg["vitesse_angulaire_max"])
+        vitesse_angulaire = max(-vitesse_max_ang, min(vitesse_angulaire, vitesse_max_ang))
 
         return Geste(
             nom="pouce_leve_rotation",
