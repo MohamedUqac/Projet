@@ -6,9 +6,9 @@ d'implémentation `[!]` et consigner le test en échec ainsi que le résultat
 observé. Ne modifier que ce fichier.
 
 ## plan3.md
-- [ ] Lire le contrat de `arbitrer` et ses tests
-- [ ] Implémenter `arbitrer` dans `code/arbiter.py`
-- [ ] Réussir `test/test_arbiter.py`
+- [x] Lire le contrat de `arbitrer` et ses tests
+- [x] Implémenter `arbitrer` dans `code/arbiter.py`
+- [x] Réussir `test/test_arbiter.py` (14 passed)
 
 ## plan4.md
 - [ ] Lire le contrat de `reconnaitre`, `thumb_detector` et les tests de gestes
