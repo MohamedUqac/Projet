@@ -174,10 +174,38 @@ class Arbitre:
             arbitrage (Arbitrage): consigne retenue et modalites ecartees
         --------------------------------------------------------------------------
         """
-        # Indice : ecarter les commandes perimees, puis retenir la plus prioritaire, la plus recente en cas d'egalite
-        # Tests : test_priorite_plus_haute_gagne_entre_deux_commandes_fraiches, test_urgence_bat_une_commande_normale_plus_fraiche_et_plus_prioritaire, test_commande_perimee_est_ecartee_et_la_tortue_sarrete, test_commande_du_futur_proche_reste_valide_et_nest_pas_supprimee
-        raise NotImplementedError(
-            "fonction 'Arbiter.arbitrer' a implementer (voir l'enonce et les tests cites)"
+        valides: list[Commande] = []
+        perimees: list[str] = []
+        for commande in self._commandes.values():
+            # L'age est borne a zéro : une commande horodatee apres l'instant
+            # d'arbitrage est "du futur proche", donc valide, jamais perimee.
+            age = max(0.0, instant - commande.instant)
+            if age > self._peremption_de(commande):
+                perimees.append(commande.modalite)
+            else:
+                valides.append(commande)
+
+        if not valides:
+            return Arbitrage(
+                twist=Twist(0.0, 0.0),
+                modalite="aucune",
+                motif="sans commande valide",
+                candidates=(),
+                perimees=tuple(perimees),
+            )
+
+        # Priorite la plus haute d'abord ; a priorite egale, la plus recente gagne.
+        gagnante = max(
+            valides,
+            key=lambda c: (self._priorite_de(c), c.instant),
+        )
+
+        return Arbitrage(
+            twist=gagnante.twist,
+            modalite=gagnante.modalite,
+            motif=gagnante.motif,
+            candidates=tuple(c.modalite for c in valides),
+            perimees=tuple(perimees),
         )
 
 
