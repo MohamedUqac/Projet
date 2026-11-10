@@ -1,0 +1,9 @@
+# Plan 3 - Arbiter.arbitrer
+
+Test command: python -m pytest test/test_arbiter.py -q
+
+1. Lire la docstring complète de `Arbitre.arbitrer` dans `code/arbiter.py`, ainsi que `Commande`, `Arbitrage`, `_priorite_de` et `_peremption_de` juste au-dessus. Lire ensuite les quatre tests visés dans `test/test_arbiter.py` : `test_priorite_plus_haute_gagne_entre_deux_commandes_fraiches`, `test_urgence_bat_une_commande_normale_plus_fraiche_et_plus_prioritaire`, `test_commande_perimee_est_ecartee_et_la_tortue_sarrete` et `test_commande_du_futur_proche_reste_valide_et_nest_pas_supprimee`.
+2. Implémenter uniquement `arbitrer` dans `code/arbiter.py`, à l'indentation déjà en place, en respectant l'ordre suivant : (a) calculer l'âge de chaque commande en le bornant à zéro, afin qu'une commande horodatée après l'instant d'arbitrage ne soit pas considérée comme périmée ; (b) écarter les commandes dont l'âge dépasse leur péremption, en gardant leurs modalités dans `perimees` ; (c) retenir la commande de priorité la plus haute, la plus récente à priorité égale, en s'appuyant sur `_priorite_de` pour que l'urgence l'emporte ; (d) remplir `candidates` avec les modalités valides et `motif` avec celui de la commande retenue.
+3. Sans commande valide, retourner un `Arbitrage` au twist exactement nul, de modalité `aucune`, avec les modalités périmées dans `perimees`. Ne jamais conserver la dernière consigne connue.
+4. Lancer `python -m pytest test/test_arbiter.py -q`. Tous les tests du fichier doivent passer, y compris ceux qui ne visent pas `arbitrer` directement (journal, describe, retirer, configurations invalides).
+5. En cas d'échec, examiner l'assertion, apporter une correction minimale dans `code/arbiter.py` uniquement, puis relancer la même commande. Répéter au maximum trois fois ; si le test échoue encore, indiquer dans `progress_B.md` que le plan est bloqué et consigner l'échec.
