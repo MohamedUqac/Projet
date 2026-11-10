@@ -145,8 +145,77 @@ def reconnaitre(hands_landmarks: Sequence[Sequence[Any]],
     if not hands_landmarks:
         return None
 
-    # Indice : l'ordre d'evaluation EST la regle de securite : paume ouverte sur toutes les mains d'abord, puis avance a deux mains, puis rotation par inclinaison
-    # Tests : test_paume_ouverte_declenche_larret_durgence, test_paume_ouverte_en_deuxieme_main_declenche_quand_meme_larret, test_deux_mains_ni_ouvertes_donnent_lavance, test_inclinaison_forte_donne_une_rotation_non_nulle_et_saturee
-    raise NotImplementedError(
-        "fonction 'reconnaitre' a implementer (voir l'enonce et les tests cites)"
-    )
+    # 1. Regle de securite : chercher une paume ouverte sur TOUTES les mains d'abord.
+    # Une main est "ouverte" si le nombre de doigts replies est inferieur ou egal
+    # au seuil defini dans la configuration, et si son echelle est suffisante.
+    seuil_doigts_ouverts = int(devoir1_cfg.get("gesture_open_hand_fingers", 0))
+    min_scale = float(devoir1_cfg.get("min_hand_scale_px", 0.0))
+
+    for landmarks in hands_landmarks:
+        points = to_pixels(landmarks, image_width, image_height)
+        metrics = hand_metrics(points)
+        if metrics.scale_px < min_scale:
+            continue
+        doigts_replies = count_folded_fingers(points)
+        if doigts_replies <= seuil_doigts_ouverts:
+            return Geste(
+                nom="paume_ouverte",
+                twist=Twist(0.0, 0.0),
+                urgence=True,
+                detail="Arret d'urgence"
+            )
+
+    # 2. Si deux mains sont detectees (et aucune n'est ouverte), on avance.
+    if len(hands_landmarks) >= 2:
+        vitesse_lineaire = float(projet_cfg.get("linear_speed", 0.0))
+        vitesse_max = float(projet_cfg.get("vitesse_lineaire_max", 0.0))
+        if vitesse_max > 0:
+            vitesse_lineaire = max(-vitesse_max, min(vitesse_lineaire, vitesse_max))
+        
+        return Geste(
+            nom="avance_deux_mains",
+            twist=Twist(vitesse_lineaire, 0.0),
+            urgence=False,
+            detail="Avance a deux mains"
+        )
+
+    # 3. Sinon, une seule main : rotation si le pouce est leve.
+    if len(hands_landmarks) == 1:
+        landmarks = hands_landmarks[0]
+        points = to_pixels(landmarks, image_width, image_height)
+        verdict = analyse_hand(points)
+        
+        if not verdict.is_up:
+            return None
+
+        min_norm = float(devoir1_cfg.get("min_vector_norm", 0.0))
+        angle = inclinaison_main(landmarks, image_width, image_height, min_norm)
+        
+        if angle is None:
+            return None
+
+        # Zone morte : si l'angle est faible, on reste neutre.
+        if abs(angle) <= ZONE_MORTE_DEG:
+            return Geste(
+                nom="pouce_leve_neutre",
+                twist=Twist(0.0, 0.0),
+                urgence=False,
+                detail=f"Inclinaison {angle:.1f} deg (zone morte)"
+            )
+
+        # Rotation : gain * angle, sature.
+        gain = float(projet_cfg.get("angular_gain", 0.0))
+        vitesse_angulaire = gain * math.radians(angle)
+        
+        vitesse_max_ang = float(projet_cfg.get("vitesse_angulaire_max", 0.0))
+        if vitesse_max_ang > 0:
+            vitesse_angulaire = max(-vitesse_max_ang, min(vitesse_angulaire, vitesse_max_ang))
+
+        return Geste(
+            nom="pouce_leve_rotation",
+            twist=Twist(0.0, vitesse_angulaire),
+            urgence=False,
+            detail=f"Inclinaison {angle:.1f} deg"
+        )
+
+    return None
