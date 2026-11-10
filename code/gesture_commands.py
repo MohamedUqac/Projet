@@ -183,7 +183,7 @@ def reconnaitre(hands_landmarks: Sequence[Sequence[Any]],
     if len(hands_landmarks) == 1:
         landmarks = hands_landmarks[0]
         points = to_pixels(landmarks, image_width, image_height)
-        verdict = analyse_hand(points)
+        verdict = analyse_hand(landmarks, image_width, image_height, devoir1_cfg)
         
         if not verdict.is_up:
             return None
