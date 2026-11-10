@@ -11,9 +11,9 @@ observé. Ne modifier que ce fichier.
 - [x] Réussir `test/test_arbiter.py` (14 passed)
 
 ## plan4.md
-- [ ] Lire le contrat de `reconnaitre`, `thumb_detector` et les tests de gestes
-- [ ] Implémenter `reconnaitre` dans `code/gesture_commands.py`
-- [ ] Réussir `test/test_gesture_commands.py`
+- [x] Lire le contrat de `reconnaitre`, `thumb_detector` et les tests de gestes
+- [x] Implémenter `reconnaitre` dans `code/gesture_commands.py`
+- [x] Réussir `test/test_gesture_commands.py` (9 passed)
 
 ## Régression du lot
-- [ ] `python -m pytest test/test_arbiter.py test/test_gesture_commands.py -q` sans échec
+- [x] `python -m pytest test/test_arbiter.py test/test_gesture_commands.py -q` sans échec (23 passed)
