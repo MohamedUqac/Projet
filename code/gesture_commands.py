@@ -148,15 +148,15 @@ def reconnaitre(hands_landmarks: Sequence[Sequence[Any]],
     # 1. Regle de securite : chercher une paume ouverte sur TOUTES les mains d'abord.
     # Une main est "ouverte" si le nombre de doigts replies est inferieur ou egal
     # au seuil defini dans la configuration, et si son echelle est suffisante.
-    seuil_doigts_ouverts = int(devoir1_cfg.get("gesture_open_hand_fingers", 0))
-    min_scale = float(devoir1_cfg.get("min_hand_scale_px", 0.0))
+    seuil_doigts_ouverts = int(projet_cfg["gesture_open_hand_fingers"])
+    min_scale = float(devoir1_cfg["min_hand_scale_px"])
 
     for landmarks in hands_landmarks:
         points = to_pixels(landmarks, image_width, image_height)
         metrics = hand_metrics(points)
         if metrics.scale_px < min_scale:
             continue
-        doigts_replies = count_folded_fingers(points)
+        doigts_replies = count_folded_fingers(points, metrics)
         if doigts_replies <= seuil_doigts_ouverts:
             return Geste(
                 nom="paume_ouverte",
