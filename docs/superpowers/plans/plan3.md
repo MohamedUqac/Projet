@@ -1,0 +1,9 @@
+﻿# Plan 3 - Arbiter.arbitrer
+
+Test command: python -m pytest test/test_arbiter.py -q
+
+1. Lire la docstring complÃ¨te de `Arbitre.arbitrer` dans `code/arbiter.py`, ainsi que `Commande`, `Arbitrage`, `_priorite_de` et `_peremption_de` juste au-dessus. Lire ensuite les quatre tests visÃ©s dans `test/test_arbiter.py` : `test_priorite_plus_haute_gagne_entre_deux_commandes_fraiches`, `test_urgence_bat_une_commande_normale_plus_fraiche_et_plus_prioritaire`, `test_commande_perimee_est_ecartee_et_la_tortue_sarrete` et `test_commande_du_futur_proche_reste_valide_et_nest_pas_supprimee`.
+2. ImplÃ©menter uniquement `arbitrer` dans `code/arbiter.py`, Ã  l'indentation dÃ©jÃ  en place, en respectant l'ordre suivant : (a) calculer l'Ã¢ge de chaque commande en le bornant Ã  zÃ©ro, afin qu'une commande horodatÃ©e aprÃ¨s l'instant d'arbitrage ne soit pas considÃ©rÃ©e comme pÃ©rimÃ©e ; (b) Ã©carter les commandes dont l'Ã¢ge dÃ©passe leur pÃ©remption, en gardant leurs modalitÃ©s dans `perimees` ; (c) retenir la commande de prioritÃ© la plus haute, la plus rÃ©cente Ã  prioritÃ© Ã©gale, en s'appuyant sur `_priorite_de` pour que l'urgence l'emporte ; (d) remplir `candidates` avec les modalitÃ©s valides et `motif` avec celui de la commande retenue.
+3. Sans commande valide, retourner un `Arbitrage` au twist exactement nul, de modalitÃ© `aucune`, avec les modalitÃ©s pÃ©rimÃ©es dans `perimees`. Ne jamais conserver la derniÃ¨re consigne connue.
+4. Lancer `python -m pytest test/test_arbiter.py -q`. Tous les tests du fichier doivent passer, y compris ceux qui ne visent pas `arbitrer` directement (journal, describe, retirer, configurations invalides).
+5. En cas d'Ã©chec, examiner l'assertion, apporter une correction minimale dans `code/arbiter.py` uniquement, puis relancer la mÃªme commande. RÃ©pÃ©ter au maximum trois fois ; si le test Ã©choue encore, indiquer dans `progress.md` que le plan est bloquÃ© et consigner l'Ã©chec.
