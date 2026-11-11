@@ -85,11 +85,31 @@ def calculer_consigne(pose: Pose,
         consigne (Consigne): vitesses saturees et justification
     --------------------------------------------------------------------------
     """
-    # Indice : arrivee d'abord, puis tourner sans avancer hors tolerance de cap, sinon avancer et corriger le cap
-    # Tests : test_cible_droit_devant_et_loin_donne_la_phase_approche, test_cible_derriere_la_tortue_impose_une_rotation_avant_toute_avance, test_erreur_de_cap_extreme_ne_depasse_jamais_vitesse_angulaire_max
-    raise NotImplementedError(
-        "fonction 'calculer_consigne' a implementer (voir l'enonce et les tests cites)"
-    )
+    angular_gain = settings["angular_gain"]
+    linear_speed = settings["linear_speed"]
+    goal_tolerance = settings["goal_tolerance"]
+    heading_tolerance_rad = settings["heading_tolerance_rad"]
+    vitesse_lineaire_max = settings["vitesse_lineaire_max"]
+    vitesse_angulaire_max = settings["vitesse_angulaire_max"]
+
+    origine = (pose.x, pose.y)
+    dist = distance(origine, cible)
+    erreur = heading_error(pose.theta, origine, cible)
+
+    if dist < goal_tolerance:
+        return Consigne(Twist(0.0, 0.0), erreur, dist, True, "arrivee")
+    else:
+        angulaire = _saturer(angular_gain * erreur, vitesse_angulaire_max)
+        if abs(erreur) > heading_tolerance_rad:
+            return Consigne(Twist(0.0, angulaire), erreur, dist, False, "orientation")
+        else:
+            return Consigne(
+                Twist(_saturer(linear_speed, vitesse_lineaire_max), angulaire),
+                erreur,
+                dist,
+                False,
+                "approche"
+            )
 
 
 class LisseurCible:
@@ -143,11 +163,14 @@ class LisseurCible:
             lissee (tuple): (x, y) apres filtrage
         --------------------------------------------------------------------------
         """
-        # Indice : premiere mesure adoptee telle quelle, ensuite filtre exponentiel avec alpha
-        # Tests : test_premiere_mesure_est_adoptee_telle_quelle_sans_lissage, test_deuxieme_mesure_se_deplace_de_exactement_alpha_vers_la_nouvelle_valeur
-        raise NotImplementedError(
-            "fonction 'LisseurCible.mettre_a_jour' a implementer (voir l'enonce et les tests cites)"
-        )
+        if self._valeur is None:
+            self._valeur = (float(mesure[0]), float(mesure[1]))
+            return self._valeur
+        else:
+            x = self._alpha * mesure[0] + (1 - self._alpha) * self._valeur[0]
+            y = self._alpha * mesure[1] + (1 - self._alpha) * self._valeur[1]
+            self._valeur = (x, y)
+            return self._valeur
 
     def reset(self) -> None:
         """Oublier la cible, par exemple quand l'objet sort du champ."""
