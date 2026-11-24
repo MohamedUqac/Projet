@@ -64,11 +64,9 @@ def choisir_meilleure(detections: Sequence[Detection]) -> Detection | None:
         detection (Detection | None): la plus confiante, None si la liste est vide
     --------------------------------------------------------------------------
     """
-    # Indice : retenir la detection de plus grande confiance, jamais la derniere parcourue
-    # Tests : test_choisir_meilleure_retient_la_plus_confiante_pas_la_derniere, test_choisir_meilleure_sur_liste_vide_rend_none
-    raise NotImplementedError(
-        "fonction 'choisir_meilleure' a implementer (voir l'enonce et les tests cites)"
-    )
+    if not detections:
+        return None
+    return max(detections, key=lambda d: d.confiance)
 
 
 def detections_depuis_resultat(resultat: Any,
