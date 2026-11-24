@@ -15,5 +15,15 @@ observé. Ne modifier que ce fichier.
 - [ ] Implémenter `reconnaitre` dans `code/gesture_commands.py`
 - [ ] Réussir `test/test_gesture_commands.py`
 
+## plan5.md
+- [x] Lire le contrat de `choisir_meilleure`, `Detection` et ses tests
+- [x] Implémenter `choisir_meilleure` dans `code/object_tracker.py`
+- [ ] Réussir `test/test_object_tracker.py`
+
+## plan6.md
+- [ ] Lire le contrat de `construire_schema`, son consommateur et ses tests
+- [ ] Implémenter `construire_schema` dans `code/regleur.py`
+- [ ] Réussir `test/test_regleur.py`
+
 ## Régression du lot
 - [ ] `python -m pytest test/test_arbiter.py test/test_gesture_commands.py -q` sans échec

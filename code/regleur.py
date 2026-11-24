@@ -78,9 +78,28 @@ def construire_schema(parametres_cfg: dict[str, Any]) -> dict[str, Any]:
         )
     # Indice : l'enumeration 'enum' vient de noms, jamais d'une liste ecrite en dur
     # Tests : test_construire_schema_enumere_les_noms_declares
-    raise NotImplementedError(
-        "fonction 'construire_schema' a implementer (voir l'enonce et les tests cites)"
-    )
+    return {
+        "type": "object",
+        "properties": {
+            "reglages": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "parametre": {
+                            "type": "string",
+                            "enum": noms
+                        },
+                        "valeur": {
+                            "type": "number"
+                        }
+                    },
+                    "required": ["parametre", "valeur"]
+                }
+            }
+        },
+        "required": ["reglages"]
+    }
 
 
 def construire_prompt(consigne: str, parametres_cfg: dict[str, Any]) -> str:
